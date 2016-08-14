@@ -3,4 +3,4 @@
 	url = https://github.com/openzipkin/docker-zipkin.git
 [submodule "ratpack"]
 	path = ratpack
-	url = git@github.com:hyleung/ratpack.git
+	url = https://github.com/hyleung/ratpack.git

@@ -16,24 +16,25 @@
 package ratpack.zipkin.internal
 
 import com.github.kristofa.brave.http.HttpClientRequest
+import io.netty.handler.codec.http.HttpHeaders
 import ratpack.http.MutableHeaders
-import ratpack.http.client.RequestSpec
+import ratpack.http.client.SentRequest
 import spock.lang.Specification
 
 class RatpackHttpClientRequestSpec extends Specification {
-    def RequestSpec requestSpec = Stub(RequestSpec)
-    def MutableHeaders headers = Mock(MutableHeaders)
+    def SentRequest sentRequest = Stub(SentRequest)
+    def HttpHeaders headers = Mock(HttpHeaders)
     def HttpClientRequest request
 
     def void setup() {
-        request = new RatpackHttpClientRequest(requestSpec, "GET")
-        requestSpec.getHeaders() >> headers
+        request = new RatpackHttpClientRequest(sentRequest)
+        sentRequest.requestHeaders() >> headers
     }
 
     def 'Should get uri from spec'() {
         given:
             def expected = new URI("some-uri")
-            requestSpec.getUrl() >> expected
+            sentRequest.uri() >> expected
         expect:
             request.getUri() == expected
     }
@@ -41,7 +42,8 @@ class RatpackHttpClientRequestSpec extends Specification {
     def 'Should get method from spec'() {
         given:
             def expected = "POST"
-            request = new RatpackHttpClientRequest(requestSpec, expected)
+            sentRequest.method() >> expected
+            request = new RatpackHttpClientRequest(sentRequest)
         expect:
             request.getHttpMethod() == expected
     }

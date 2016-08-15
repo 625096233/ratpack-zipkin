@@ -17,8 +17,7 @@ package ratpack.zipkin.internal;
 
 import com.github.kristofa.brave.ClientRequestAdapter;
 import com.github.kristofa.brave.http.SpanNameProvider;
-
-import ratpack.http.client.RequestSpec;
+import ratpack.http.client.SentRequest;
 
 import javax.inject.Inject;
 
@@ -38,12 +37,11 @@ public class ClientRequestAdapterFactory {
   /**
    * Create a {@link ClientRequestAdapter} instance.
    *
-   * @param requestSpec the request spec
-   * @param method the http method
+   * @param request the request
    *
    * @return a client request adaptor
    */
-  public ClientRequestAdapter createAdaptor(final RequestSpec requestSpec, final String method) {
-    return new RatpackClientRequestAdapter(requestSpec, method, spanNameProvider);
+  public ClientRequestAdapter createAdaptor(final SentRequest request) {
+    return new RatpackClientRequestAdapter(request, spanNameProvider);
   }
 }

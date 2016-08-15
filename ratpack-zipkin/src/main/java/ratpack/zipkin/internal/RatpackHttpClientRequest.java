@@ -16,31 +16,29 @@
 package ratpack.zipkin.internal;
 
 import com.github.kristofa.brave.http.HttpClientRequest;
-import ratpack.http.client.RequestSpec;
+import ratpack.http.client.SentRequest;
 
 import java.net.URI;
 
 class RatpackHttpClientRequest implements HttpClientRequest {
-  private final RequestSpec requestSpec;
-  private final String method;
+  private final SentRequest request;
 
-  RatpackHttpClientRequest(final RequestSpec requestSpec, final String method) {
-    this.requestSpec = requestSpec;
-    this.method = method;
+  RatpackHttpClientRequest(final SentRequest request) {
+    this.request = request;
   }
 
   @Override
   public void addHeader(final String header, final String value) {
-    requestSpec.getHeaders().add(header, value);
+    request.requestHeaders().add(header, value);
   }
 
   @Override
   public URI getUri() {
-    return requestSpec.getUrl();
+    return  URI.create(request.uri());
   }
 
   @Override
   public String getHttpMethod() {
-    return method;
+    return request.method();
   }
 }

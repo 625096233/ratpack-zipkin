@@ -16,7 +16,7 @@
 package ratpack.zipkin.internal
 
 import com.github.kristofa.brave.http.SpanNameProvider
-import ratpack.http.client.RequestSpec
+import ratpack.http.client.SentRequest
 import spock.lang.Specification
 
 class ClientRequestAdapterFactorySpec extends Specification {
@@ -26,7 +26,7 @@ class ClientRequestAdapterFactorySpec extends Specification {
         given:
             def factory = new ClientRequestAdapterFactory(spanNameProvider)
         when:
-            def adapter = factory.createAdaptor(Stub(RequestSpec), "GET")
+            def adapter = factory.createAdaptor(Stub(SentRequest))
         then:
             adapter != null
     }

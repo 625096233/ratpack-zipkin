@@ -20,44 +20,44 @@ import com.github.kristofa.brave.IdConversion;
 import com.github.kristofa.brave.KeyValueAnnotation;
 import com.github.kristofa.brave.SpanId;
 import com.github.kristofa.brave.http.BraveHttpHeaders;
-import com.github.kristofa.brave.http.HttpClientRequest;
 import com.github.kristofa.brave.http.SpanNameProvider;
 import com.github.kristofa.brave.internal.Nullable;
 import com.twitter.zipkin.gen.Endpoint;
-import ratpack.http.client.RequestSpec;
+import io.netty.handler.codec.http.HttpHeaders;
+import ratpack.http.client.SentRequest;
 
 import java.util.Collection;
 import java.util.Collections;
 
 class RatpackClientRequestAdapter implements ClientRequestAdapter {
-  private final RequestSpec requestSpec;
+  private final SentRequest sentRequest;
   private final SpanNameProvider spanNameProvider;
-  private HttpClientRequest clientRequest;
 
-  RatpackClientRequestAdapter(final RequestSpec requestSpec, final String method,
+  RatpackClientRequestAdapter(final SentRequest sentRequest,
                               final SpanNameProvider spanNameProvider) {
-    this.requestSpec = requestSpec;
+    this.sentRequest = sentRequest;
     this.spanNameProvider = spanNameProvider;
-    this.clientRequest = new RatpackHttpClientRequest(requestSpec, method);
   }
 
   @Override
   public String getSpanName() {
-    return spanNameProvider.spanName(clientRequest);
+    return spanNameProvider.spanName(new RatpackHttpClientRequest(sentRequest));
   }
 
   @Override
   public void addSpanIdToRequest(@Nullable final SpanId spanId) {
+    HttpHeaders headers = sentRequest.requestHeaders();
     if (spanId == null) {
-      requestSpec.getHeaders().add(BraveHttpHeaders.Sampled.getName(), "0");
+
+      headers.add(BraveHttpHeaders.Sampled.getName(), "0");
     } else {
-      requestSpec.getHeaders().add(BraveHttpHeaders.Sampled.getName(), "1");
-      requestSpec.getHeaders().add(BraveHttpHeaders.TraceId.getName(),
+      headers.add(BraveHttpHeaders.Sampled.getName(), "1");
+      headers.add(BraveHttpHeaders.TraceId.getName(),
           IdConversion.convertToString(spanId.traceId));
-      requestSpec.getHeaders().add(BraveHttpHeaders.SpanId.getName(),
+      headers.add(BraveHttpHeaders.SpanId.getName(),
           IdConversion.convertToString(spanId.spanId));
       if (spanId.nullableParentId() != null) {
-        requestSpec.getHeaders().add(BraveHttpHeaders.ParentSpanId.getName(),
+        headers.add(BraveHttpHeaders.ParentSpanId.getName(),
             IdConversion.convertToString(spanId.parentId));
       }
     }
@@ -65,7 +65,7 @@ class RatpackClientRequestAdapter implements ClientRequestAdapter {
 
   @Override
   public Collection<KeyValueAnnotation> requestAnnotations() {
-    return Collections.singletonList(KeyValueAnnotation.create("http.uri", requestSpec.getUrl().toString()));
+    return Collections.singletonList(KeyValueAnnotation.create("http.uri", sentRequest.uri()));
   }
 
   @Override

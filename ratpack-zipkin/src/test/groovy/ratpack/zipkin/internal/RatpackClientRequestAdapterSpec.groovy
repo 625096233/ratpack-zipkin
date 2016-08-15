@@ -20,8 +20,9 @@ import com.github.kristofa.brave.KeyValueAnnotation
 import com.github.kristofa.brave.SpanId
 import com.github.kristofa.brave.http.HttpClientRequest
 import com.github.kristofa.brave.http.SpanNameProvider
+import io.netty.handler.codec.http.HttpHeaders
 import ratpack.http.MutableHeaders
-import ratpack.http.client.RequestSpec
+import ratpack.http.client.SentRequest
 import spock.lang.Specification
 
 import static org.assertj.core.api.Assertions.assertThat
@@ -33,13 +34,13 @@ import static org.assertj.core.api.Assertions.assertThat
  */
 class RatpackClientRequestAdapterSpec extends Specification {
     def SpanNameProvider spanNameProvider = Stub(SpanNameProvider)
-    def RequestSpec requestSpec = Mock(RequestSpec)
-    def MutableHeaders headers = Mock(MutableHeaders)
+    def SentRequest request = Mock(SentRequest)
+    def HttpHeaders headers = Mock(HttpHeaders)
     def ClientRequestAdapter adapter
 
     def setup() {
-        adapter = new RatpackClientRequestAdapter(requestSpec, "GET", spanNameProvider)
-        requestSpec.getHeaders() >> headers
+        adapter = new RatpackClientRequestAdapter(request, spanNameProvider)
+        request.requestHeaders() >> headers
     }
 
     def 'Should get span name from provider'() {
@@ -53,7 +54,7 @@ class RatpackClientRequestAdapterSpec extends Specification {
     def 'Should return uri in annotations'() {
         given:
             def expected = new URI("some-uri")
-            requestSpec.getUrl() >> expected
+            request.uri() >> expected
         when:
             def result = adapter.requestAnnotations()
         then:

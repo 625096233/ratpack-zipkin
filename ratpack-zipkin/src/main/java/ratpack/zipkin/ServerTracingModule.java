@@ -23,7 +23,6 @@ import com.google.inject.Provides;
 import com.google.inject.multibindings.Multibinder;
 import ratpack.guice.ConfigurableModule;
 import ratpack.handling.HandlerDecorator;
-import ratpack.http.client.HttpClientRequestInterceptor;
 import ratpack.server.ServerConfig;
 import ratpack.zipkin.internal.*;
 

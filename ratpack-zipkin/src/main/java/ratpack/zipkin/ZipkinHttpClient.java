@@ -52,13 +52,15 @@ public class ZipkinHttpClient implements HttpClient {
     this.responseInterceptor = responseInterceptor;
     this.requestAdapterFactory = requestAdapterFactory;
     this.responseAdapterFactory = responseAdapterFactory;
+
   }
 
   @Override
   public Promise<ReceivedResponse> get(final URI uri, final Action<? super RequestSpec> requestConfigurer) {
-    return request(uri, requestConfigurer.prepend(requestSpec ->
-        requestInterceptor.handle(requestAdapterFactory.createAdaptor(requestSpec, "GET"))
-    ));
+    throw new RuntimeException("Not implemented!");
+//    return request(uri, requestConfigurer.prepend(requestSpec ->
+//        requestInterceptor.handle(requestAdapterFactory.createAdaptor(requestSpec, "GET"))
+//    ));
   }
 
   @Override
@@ -93,9 +95,10 @@ public class ZipkinHttpClient implements HttpClient {
 
   @Override
   public Promise<ReceivedResponse> post(final URI uri, final Action<? super RequestSpec> requestConfigurer) {
-    return request(uri, requestConfigurer.prepend(requestSpec ->
-        requestInterceptor.handle(requestAdapterFactory.createAdaptor(requestSpec, "POST"))
-    ));
+    throw new RuntimeException("Not implemented!");
+//    return request(uri, requestConfigurer.prepend(requestSpec ->
+//        requestInterceptor.handle(requestAdapterFactory.createAdaptor(requestSpec, "POST"))
+//    ));
   }
 
   @Override

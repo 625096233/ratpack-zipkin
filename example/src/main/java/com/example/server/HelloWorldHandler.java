@@ -22,9 +22,10 @@ import org.slf4j.LoggerFactory;
 import ratpack.handling.Context;
 import ratpack.handling.Handler;
 import ratpack.http.client.HttpClient;
+import ratpack.http.client.HttpClientRequestInterceptor;
+import ratpack.http.client.HttpClientResponseInterceptor;
 import ratpack.http.client.ReceivedResponse;
 import ratpack.server.ServerConfig;
-import ratpack.zipkin.ZipkinHttpClient;
 
 import javax.inject.Inject;
 import java.net.URI;

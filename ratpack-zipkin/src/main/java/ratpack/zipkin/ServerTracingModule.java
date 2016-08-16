@@ -21,8 +21,12 @@ import com.github.kristofa.brave.http.SpanNameProvider;
 import com.google.inject.Provider;
 import com.google.inject.Provides;
 import com.google.inject.multibindings.Multibinder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ratpack.guice.ConfigurableModule;
 import ratpack.handling.HandlerDecorator;
+import ratpack.http.client.HttpClientRequestInterceptor;
+import ratpack.http.client.HttpClientResponseInterceptor;
 import ratpack.server.ServerConfig;
 import ratpack.zipkin.internal.*;
 
@@ -42,11 +46,19 @@ public class ServerTracingModule extends ConfigurableModule<ServerTracingModule.
     bind(ServerTracingHandler.class).to(DefaultServerTracingHandler.class);
     Provider<ServerTracingHandler> serverTracingHandlerProviderProvider = getProvider(ServerTracingHandler.class);
 
+    Multibinder.newSetBinder(binder(), HttpClientRequestInterceptor.class)
+               .addBinding().toInstance(req -> logger.info("Request intercepted: {}", req));
+//    Multibinder.newSetBinder(binder(), HttpClientRequestInterceptor.class)
+//               .addBinding().to(ZipkinClientRequestInterceptor.class);
+    Multibinder.newSetBinder(binder(), HttpClientResponseInterceptor.class)
+               .addBinding().toInstance(res -> logger.info("Response intercepted: {}", res));
+//    Multibinder.newSetBinder(binder(), HttpClientResponseInterceptor.class)
+//               .addBinding().to(ZipkinClientResponseInterceptor.class);
     bind(ClientRequestAdapterFactory.class).in(SINGLETON);
     bind(ClientResponseAdapterFactory.class).in(SINGLETON);
 
-    bind(ZipkinHttpClient.class);
-    Multibinder.newSetBinder(binder(), HandlerDecorator.class).addBinding().toProvider(() -> HandlerDecorator.prepend(serverTracingHandlerProviderProvider.get()));
+    Multibinder.newSetBinder(binder(), HandlerDecorator.class).
+        addBinding().toProvider(() -> HandlerDecorator.prepend(serverTracingHandlerProviderProvider.get()));
   }
 
   @Provides
